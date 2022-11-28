@@ -16,3 +16,4 @@ function loadingAnimation(text = "", chars = ["⠙", "⠘", "⠰", "⠴", "⠤",
 }
 
 // loadingAnimation("waiting for file change for");
+//git remote add origin https://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@github.com/anilkumarum/crx-hotload.git
