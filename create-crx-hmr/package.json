@@ -1,0 +1,19 @@
+{
+	"name": "create-crx-hmr",
+	"version": "1.0.7",
+	"description": "",
+	"main": "server.js",
+	"author": "Anil Kumar",
+	"type": "module",
+	"bin": {
+		"create-crx-hmr": "bin/cli.js"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"license": "MIT",
+	"devDependencies": {
+		"crx-hmr": "^0.0.5"
+	}
+}

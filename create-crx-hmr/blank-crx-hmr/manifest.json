@@ -28,9 +28,11 @@
 		"type": "module"
 	},
 
-	"web_accessible_resources": [{ "resources": ["client.js", "scripts/js/data.js"], "matches": ["<all_urls>"] }],
+	"web_accessible_resources": [
+		{ "resources": ["/node_modules/crx-hmr/client.js", "scripts/js/data.js"], "matches": ["<all_urls>"] }
+	],
 
-	"permissions": ["tabs", "scripting", "storage"],
+	"permissions": ["scripting", "storage"],
 
 	"host_permissions": ["<all_urls>"]
 }

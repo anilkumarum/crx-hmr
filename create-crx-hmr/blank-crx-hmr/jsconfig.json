@@ -7,13 +7,11 @@
 		"importsNotUsedAsValues": "error",
 		"isolatedModules": true,
 		"resolveJsonModule": true,
-
-		"sourceMap": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"baseUrl": ".",
 
+		"baseUrl": ".",
 		"checkJs": true
 	},
 	"typeAcquisition": { "include": ["chrome"] }

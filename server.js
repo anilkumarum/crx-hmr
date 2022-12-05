@@ -142,5 +142,7 @@ async function connectClient(request, res) {
 	const watcher = new ModuleWatcher(rootDir, res);
 }
 var created = () => console.info("\x1B[32m%s\x1B[0m", `HMR ready at ${4500} port. Waiting for client`);
-var server = createServer().listen(process.env.PORT || 4500, created);
-server.on("request", connectClient);
+export default async function start() {
+	var server = createServer().listen(process.env.PORT || 4500, created);
+	server.on("request", connectClient);
+}

@@ -3,11 +3,15 @@ const rootDir = location.pathname.match(/(.*)\//)[1],
 	isBackground = location.pathname === "/background.js",
 	pageName = isInjected ? checkInjectedType() : rootDir;
 
+const searchParams = new URL(import.meta.url).searchParams;
+//jsload -> "alternate" | "reload" | refresh
+//inject -> "scripts" | "contents"
+//reopen -> true
 function checkInjectedType() {
-	// no-api to check injected script by static content_scripts on manifest or runtime scripting,
-	//need to set manually
-	// return "/scripts";
-	return "/contents";
+	const injectPage = searchParams.get("inject");
+	if (injectPage !== "scripts" && injectPage !== "contents")
+		throw new Error("inject params must be scripts or contents");
+	return "/" + injectPage;
 }
 
 const evtSource = new EventSource("http://localhost:4500" + pageName);
@@ -29,8 +33,12 @@ evtSource.onmessage = async (event) => {
 		case "crx-reload":
 			//for options/popup page
 			chrome.runtime.reload();
-			// chrome.action.openPopup({});
-			// chrome.runtime.openOptionsPage();
+			if (searchParams.get("reopen") === "true")
+				pageName === "/popup"
+					? // @ts-ignore
+					  chrome.action.openPopup({})
+					: pageName === "/options" && chrome.runtime.openOptionsPage();
+
 			break;
 
 		case "crx&tab-reload":
@@ -58,6 +66,7 @@ function updateFiles(filePath) {
 }
 
 //$$$$$$$ Update js File $$$$$$$
+const loadModule = searchParams.get("jsload") ?? "alternate";
 var moduleLoaded;
 class JsUpdater {
 	constructor(filePath) {
@@ -85,27 +94,33 @@ class JsUpdater {
 			? //we need full path by injected script module
 			  chrome.runtime.getURL(`${this.filePath}?t=${Date.now()}`)
 			: `${this.filePath}?t=${Date.now()}`;
-		//check file is web components file
-		if (this.checkComponent()) await import(jsModuleUrl).catch((err) => console.error(err));
-		// ---> Modify Js module behaviour --->
-		//* case 0
-		//TODO add hotModule API
-		//* case 1
-		/* just reload current module always
-		else await import(`${this.filePath}?t=${Date.now()}`).catch((err) => console.error(err));
 
-		 */
-		//* case 2
-		/* alter between  reload current module and full page reload
-		 */
-		//
-		else moduleLoaded ? location.reload() : await import(jsModuleUrl).catch((err) => console.error(err));
-		//
-		console.log("%c" + this.filename + "hot reloaded", "color:yellow");
-		//* case 3
-		/* reload full page load
-		else location.reload();
-		 */
+		//check file is web components file
+		if (this.checkComponent()) {
+			await import(jsModuleUrl).catch((err) => console.error(err));
+			console.log("%c" + this.filename + "component hot reloaded", "color:yellow");
+		} else {
+			switch (loadModule) {
+				case "reload":
+					await import(`${this.filePath}?t=${Date.now()}`).catch((err) => console.error(err));
+					console.log("%c" + this.filename + "hot reloaded", "color:yellow");
+					break;
+
+				case "alternate":
+					console.log("%c" + this.filename + "hot reloaded", "color:yellow");
+					if (moduleLoaded) location.reload();
+					else await import(jsModuleUrl).catch((err) => console.error(err));
+					break;
+
+				case "refresh":
+					location.reload();
+					break;
+
+				default:
+					location.reload();
+					break;
+			}
+		}
 	}
 }
 
@@ -117,7 +132,6 @@ class CssUpdater {
 		this.filePath = filePath;
 		this.filename = this.filePath.slice(this.filePath.lastIndexOf("/") + 1);
 		isInjected ? this.#replaceInjectedCss() : this.#updateCssFile();
-		console.log(this.filePath);
 	}
 
 	#replaceInjectedCss() {
@@ -144,7 +158,6 @@ class CssUpdater {
 	}
 
 	async swapStyleSheet() {
-		console.log(this.filePath);
 		let existSheet;
 		if (styleSheetMap.has(this.filePath)) existSheet = styleSheetMap.get(this.filePath);
 		else {
@@ -196,6 +209,7 @@ if (isBackground) {
 		}
 	});
 }
+//TODO port.connect for activate background
 
 /**
  *
@@ -211,7 +225,8 @@ export function register(elemTag, Class, styleSheetPaths) {
 		for (const node of nodeList) {
 			Object.setPrototypeOf(node, Class.prototype);
 			//for HTMLElement
-			// node.connectedCallback();
+			// @ts-ignore
+			node.connectedCallback();
 			//for LITELEMENT
 			// node.requestUpdate();
 		}

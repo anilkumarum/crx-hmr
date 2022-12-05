@@ -1,2 +1,4 @@
 node
-
+jsconfig.json
+create-crx-hmr
+.vscode

@@ -1,20 +1,30 @@
-# crx-hotload
+# crx-hmr
 
 Chrome extension hot Modules Reloader
+💡 Instant Server Start
+⚡️ Lightning Fast HMR
+🔄 auto-reload chrome extension
 
-# Install
+[![NPM](https://nodei.co/npm/crx-hmr.png)](https://nodei.co/npm/crx-hmr/)
 
-> npm install -g path-fixxer
+A file watcher server that watch file change and instant update changed file in chrome extension without full reload.
 
-[![NPM](https://nodei.co/npm/crx-hotload.png)](https://nodei.co/npm/crx-hotload/)
+# Benefits
+
+With this package, you don't need to do
+
+1. Manual reload chrome extension.
+2. Close and reopen popup window to view change.
+3. Need to refresh tab to view change.
+
+# Get started
+
+> npm create crx-hmr
 
 # Usage
 
-Create new extension Project
-`npm crx-hmr create`
-
 Start HMR server
-`npm crx-hmr start`
+`crx-hmr start`
 
 # Related
 

@@ -1,0 +1,16 @@
+{
+	"name": "chrome_extension",
+	"version": "1.0.0",
+	"description": "first chrome_extension",
+	"main": "server.js",
+	"type": "module",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "crx-hmr"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"devDependencies": {
+		"crx-hmr": "^0.0.5"
+	}
+}
