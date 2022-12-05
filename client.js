@@ -88,9 +88,11 @@ class JsUpdater {
 		//check file is web components file
 		if (this.checkComponent()) await import(jsModuleUrl).catch((err) => console.error(err));
 		// ---> Modify Js module behaviour --->
+		//* case 0
+		//TODO add hotModule API
 		//* case 1
 		/* just reload current module always
-		await import(`${this.filePath}?t=${Date.now()}`).catch((err) => console.error(err));
+		else await import(`${this.filePath}?t=${Date.now()}`).catch((err) => console.error(err));
 
 		 */
 		//* case 2
@@ -102,7 +104,7 @@ class JsUpdater {
 		console.log("%c" + this.filename + "hot reloaded", "color:yellow");
 		//* case 3
 		/* reload full page load
-		location.reload();
+		else location.reload();
 		 */
 	}
 }
