@@ -9,7 +9,8 @@
 	"icons": { "128": "icon_128.png", "16": "icon.png" },
 
 	"action": {
-		"default_icon": "icon.png"
+		"default_icon": "icon.png",
+		"default_popup": "popup/index.html"
 	},
 
 	"options_page": "options/index.html",
@@ -28,9 +29,7 @@
 		"type": "module"
 	},
 
-	"web_accessible_resources": [
-		{ "resources": ["/node_modules/crx-hmr/client.js", "scripts/js/data.js"], "matches": ["<all_urls>"] }
-	],
+	"web_accessible_resources": [{ "resources": ["/node_modules/crx-hmr/client.js"], "matches": ["<all_urls>"] }],
 
 	"permissions": ["scripting", "storage"],
 

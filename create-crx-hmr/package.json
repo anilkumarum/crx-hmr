@@ -1,6 +1,6 @@
 {
 	"name": "create-crx-hmr",
-	"version": "1.0.7",
+	"version": "1.1.1",
 	"description": "",
 	"main": "server.js",
 	"author": "Anil Kumar",
@@ -12,8 +12,5 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
-	"license": "MIT",
-	"devDependencies": {
-		"crx-hmr": "^0.0.5"
-	}
+	"license": "MIT"
 }

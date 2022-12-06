@@ -2,13 +2,13 @@
 
 Create chrome extension project with crx-hmr
 
-# Install
+# Get Started
 
 > npm create crx-hmr
 
 # Usage
 
-Start HMR server
+Start HMR server\
 `crx-hmr start`
 
 # Related
