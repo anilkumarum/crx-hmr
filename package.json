@@ -1,0 +1,34 @@
+{
+	"name": "crx-hmr",
+	"version": "0.1.7",
+	"description": "Chrome extension hot Modules Reloader",
+	"main": "server.js",
+	"type": "module",
+	"exports": "./server.js",
+	"engines": {
+		"node": ">=16.14"
+	},
+	"repository": "anilkumarum/crx-hmr",
+	"bugs": {
+		"url": "https://github.com/anilkumarum/crx-hmr/issues"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "node --watch server.js",
+		"start": "node server.js",
+		"build": "esbuild node/index.js --bundle --outfile=server.js --platform=node --format=esm"
+	},
+	"bin": {
+		"crx-hmr": "bin/cli.js"
+	},
+	"keywords": [
+		"hmr",
+		"chrome-extension",
+		"extension",
+		"hot reload",
+		"auto reload",
+		"crx reload"
+	],
+	"author": "Anil Kumar",
+	"license": "MIT"
+}
