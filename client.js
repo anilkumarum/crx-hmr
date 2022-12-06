@@ -170,7 +170,6 @@ class CssUpdater {
 			fetch(this.filePath)
 				.then((response) => response.ok && response.text())
 				.then((data) => {
-					console.log(existSheet);
 					existSheet.replace(data);
 					console.log("%c" + this.filename + " hot reloaded", "color:dodgerblue");
 				})

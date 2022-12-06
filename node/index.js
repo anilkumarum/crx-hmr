@@ -22,9 +22,10 @@ async function connectClient(request, res) {
 	res.on("close", () => {
 		watcher.unwatchDir();
 		console.info(bgclr["red"], `⚠️ ${pageName} page disconnected `);
+		watcher = null;
 	});
 
-	const watcher = new ModuleWatcher(rootDir, res, searchParams?.match(/mdir=(.*)&/)?.[1]);
+	let watcher = new ModuleWatcher(rootDir, res, searchParams?.match(/mdir=(.*)&/)?.[1]);
 }
 const created = () => console.info(clr["green"], `HMR ready at ${4500} port. Waiting for client`);
 
@@ -32,3 +33,4 @@ export default async function start() {
 	const server = createServer().listen(process.env.PORT || 4500, created);
 	server.on("request", connectClient);
 }
+start();

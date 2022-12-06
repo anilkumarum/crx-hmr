@@ -21,6 +21,13 @@ With this package, you don't need to do
 
 > npm create crx-hmr
 
+### from source code
+
+Grab client.js and server.js file from github \
+then add client.js with chrome extension page.\
+rename server.js to server.mjs
+For start server: `npm start`
+
 # Usage
 
 Start HMR server\
