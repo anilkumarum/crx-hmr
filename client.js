@@ -1,19 +1,19 @@
 const rootDir = location.pathname.match(/(.*)\//)[1],
 	isInjected = location.protocol !== "chrome-extension:",
 	isBackground = location.pathname === "/background.js",
-	pageName = isInjected ? checkInjectedType() : rootDir;
+	searchParams = new URL(import.meta.url).searchParams;
+let pageName = isInjected ? checkInjectedType() : rootDir;
 
-const searchParams = new URL(import.meta.url).searchParams;
-//jsload -> "alternate" | "reload" | refresh
-//inject -> "scripts" | "contents"
-//reopen -> true
 function checkInjectedType() {
 	const injectPage = searchParams.get("inject");
 	if (injectPage !== "scripts" && injectPage !== "contents")
 		throw new Error("inject params must be scripts or contents");
 	return "/" + injectPage;
 }
-
+//jsload -> "alternate" | "reload" | refresh
+//inject -> "scripts" | "contents"
+//reopen -> true
+searchParams.has("mdir") && (pageName += searchParams.get("mdir"));
 const evtSource = new EventSource("http://localhost:4500" + pageName);
 
 addEventListener("beforeunload", () => evtSource.close());
@@ -98,16 +98,16 @@ class JsUpdater {
 		//check file is web components file
 		if (this.checkComponent()) {
 			await import(jsModuleUrl).catch((err) => console.error(err));
-			console.log("%c" + this.filename + "component hot reloaded", "color:yellow");
+			console.log("%c" + this.filename + "component hot reloaded", "color:gold");
 		} else {
 			switch (loadModule) {
 				case "reload":
 					await import(`${this.filePath}?t=${Date.now()}`).catch((err) => console.error(err));
-					console.log("%c" + this.filename + "hot reloaded", "color:yellow");
+					console.log("%c" + this.filename + "hot reloaded", "color:gold");
 					break;
 
 				case "alternate":
-					console.log("%c" + this.filename + "hot reloaded", "color:yellow");
+					console.log("%c" + this.filename + "hot reloaded", "color:gold");
 					if (moduleLoaded) location.reload();
 					else await import(jsModuleUrl).catch((err) => console.error(err));
 					break;

@@ -1,12 +1,12 @@
-// index.js
+// node/index.js
 import { createServer } from "node:http";
 
-// watcher.js
+// node/watcher.js
 import { platform } from "node:os";
-import { watch, stat } from "node:fs";
+import { watch, stat, access, constants } from "node:fs";
 import { readdir, lstat } from "node:fs/promises";
 
-// reloader.js
+// node/reloader.js
 import { resolve } from "node:path";
 import { exec } from "node:child_process";
 var ReloadHandler = class {
@@ -16,9 +16,7 @@ var ReloadHandler = class {
 		this.processFileType = /* @__PURE__ */ new Set(["scss", "pug"]);
 	}
 	#passToClient(payload) {
-		this.res.write(`data:${payload}
-
-`);
+		this.res.write(`data:${payload}\n\n`);
 		payload.endsWith("reload") && console.log(payload);
 	}
 	updateChangedFile(filename, watchDir) {
@@ -52,24 +50,61 @@ var ReloadHandler = class {
 	}
 };
 
-// watcher.js
+// node/util.js
+var _pgClr = {
+	"/background": "42",
+	"/scripts": "43",
+	"/contents": "44",
+	"/popup": "45",
+	"/options": "46",
+};
+var pgClr = {
+	"/background": "32",
+	"/scripts": "33",
+	"/contents": "34",
+	"/options": "36",
+	"/popup": "35",
+};
+var clr = {
+	dim: "\x1B[2m%s\x1B[0m",
+	black: "\x1B[30m%s\x1B[0m",
+	red: "\x1B[31m%s\x1B[0m",
+	green: "\x1B[32m%s\x1B[0m",
+	yellow: "\x1B[33m%s\x1B[0m",
+	blue: "\x1B[34m%s\x1B[0m",
+	magenta: "\x1B[35m%s\x1B[0m",
+	cyan: "\x1B[36m%s\x1B[0m",
+	white: "\x1B[37m%s\x1B[0m",
+};
+var bgclr = {
+	black: "\x1B[40m%s\x1B[0m",
+	red: "\x1B[41m%s\x1B[0m",
+	green: "\x1B[42m%s\x1B[0m",
+	yellow: "\x1B[43m%s\x1B[0m",
+	blue: "\x1B[44m%s\x1B[0m",
+	magenta: "\x1B[45m%s\x1B[0m",
+	cyan: "\x1B[46m%s\x1B[0m",
+	white: "\x1B[47m%s\x1B[0m",
+};
+
+// node/watcher.js
 var isLinux = platform() === "linux";
 var ModuleWatcher = class {
 	#watcherList = /* @__PURE__ */ new Set();
-	constructor(rootDir, res) {
+	constructor(rootDir, res, moreDir) {
 		this.rootDir = rootDir;
 		this.res = res;
 		this.init();
 		this.reload = new ReloadHandler(rootDir, res);
 		this.debounce = true;
+		this.moreDirs = moreDir && moreDir.split[","];
 	}
 	async init() {
 		this.#watchFile(this.rootDir.slice(1));
 		isLinux && this.#getDirectories(this.rootDir.slice(1));
-		this.res.write(`data:\u26A1 hmr connected
-
-`);
-		this.#watchFile("style");
+		this.res.write(`data:\u26A1 hmr connected\n\n`);
+		if (this.moreDirs)
+			for (const dir of this.moreDirs) access(dir, constants.F_OK, (err) => err || this.#watchFile(dir));
 	}
 	#watchFile(watchDir) {
 		const watcher = watch(watchDir, { recursive: !isLinux }, (event, filename) => {
@@ -81,7 +116,11 @@ var ModuleWatcher = class {
 	async filterChangeEvent(filename, watchDir) {
 		if (this.debounce) return (this.debounce = false);
 		this.reload.updateChangedFile(filename, watchDir),
-			console.log(`[${this.rootDir.slice(1)}]\x1B[32m page reload\x1B[37m ${filename}`);
+			console.log(
+				`\x1B[${pgClr[this.rootDir]}m[${this.rootDir.slice(1)}]\x1B[0m`,
+				`\x1B[32m hmr update\x1B[0m`,
+				`\x1B[2m ${filename}\x1B[0m`
+			);
 		setTimeout(() => (this.debounce = true), 1e3);
 	}
 	async checkRenameFile(watchDir, filename) {
@@ -111,21 +150,12 @@ var ModuleWatcher = class {
 	}
 };
 
-// util.js
-var clr = {
-	"/background": "42",
-	"/scripts": "43",
-	"/options": "46",
-	"/popup": "33",
-	"/contents": "44",
-};
-
-// index.js
+// node/index.js
 async function connectClient(request, res) {
-	const rootDir = request.url;
+	const [rootDir, searchParams] = request.url.split("?");
 	const pageName = rootDir.slice(1);
-	console.info(`\x1B[${clr[rootDir]}m%s\x1B[0m`, pageName + " page connected ");
-	console.info("\x1B[36m%s\x1B[0m", "waiting for file change for " + pageName);
+	console.info(`\x1B[${_pgClr[rootDir]}m%s\x1B[0m`, pageName + " page connected ");
+	console.info(clr["cyan"], "waiting for file change for " + pageName);
 	res.writeHead(200, {
 		"Access-Control-Allow-Origin": "*",
 		"Access-Control-Allow-Methods": "GET,OPTIONS",
@@ -137,12 +167,13 @@ async function connectClient(request, res) {
 	});
 	res.on("close", () => {
 		watcher.unwatchDir();
-		console.info("\x1B[41m%s\x1B[0m", `\u26A0\uFE0F ${pageName} page disconnected `);
+		console.info(bgclr["red"], `\u26A0\uFE0F ${pageName} page disconnected `);
 	});
-	const watcher = new ModuleWatcher(rootDir, res);
+	const watcher = new ModuleWatcher(rootDir, res, searchParams?.match(/mdir=(.*)&/)?.[1]);
 }
-var created = () => console.info("\x1B[32m%s\x1B[0m", `HMR ready at ${4500} port. Waiting for client`);
-export default async function start() {
-	var server = createServer().listen(process.env.PORT || 4500, created);
+var created = () => console.info(clr["green"], `HMR ready at ${4500} port. Waiting for client`);
+async function start() {
+	const server = createServer().listen(process.env.PORT || 4500, created);
 	server.on("request", connectClient);
 }
+export { start as default };

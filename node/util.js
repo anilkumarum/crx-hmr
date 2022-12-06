@@ -1,12 +1,21 @@
-export const clr = {
+export const _pgClr = {
 	"/background": "42",
 	"/scripts": "43",
-	"/options": "46",
-	"/popup": "33",
 	"/contents": "44",
+	"/popup": "45",
+	"/options": "46",
 };
 
-/* export const clr = {
+export const pgClr = {
+	"/background": "32",
+	"/scripts": "33",
+	"/contents": "34",
+	"/options": "36",
+	"/popup": "35",
+};
+
+export const clr = {
+	dim: "\x1b[2m%s\x1b[0m",
 	black: "\x1b[30m%s\x1b[0m",
 	red: "\x1b[31m%s\x1b[0m",
 	green: "\x1b[32m%s\x1b[0m",
@@ -27,13 +36,12 @@ export const bgclr = {
 	cyan: "\x1b[46m%s\x1b[0m",
 	white: "\x1b[47m%s\x1b[0m",
 };
- */
 
-function loadingAnimation(text = "", chars = ["⠙", "⠘", "⠰", "⠴", "⠤", "⠦", "⠆", "⠃", "⠋", "⠉"], delay = 200) {
+export function waiting(text = "", chars = ["⠙", "⠘", "⠰", "⠴", "⠤", "⠦", "⠆", "⠃", "⠋", "⠉"], delay = 200) {
 	let x = 0;
 
 	return setInterval(function () {
-		process.stdout.write("\r" + chars[x++] + " " + text);
+		process.stdout.write(`\r\x1B[36m${chars[x++]} ${text}\x1B[0m`);
 		x = x % chars.length;
 	}, delay);
 }

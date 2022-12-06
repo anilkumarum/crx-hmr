@@ -1,27 +1,30 @@
 import { platform } from "node:os";
-import { watch, stat } from "node:fs";
+import { watch, stat, access, constants } from "node:fs";
 import { resolve } from "node:path";
 import { readdir, lstat } from "node:fs/promises";
 import { ReloadHandler } from "./reloader.js";
+import { clr, pgClr } from "./util.js";
 const isLinux = platform() === "linux";
 
 export class ModuleWatcher {
 	#watcherList = new Set();
 
-	constructor(rootDir, res) {
+	constructor(rootDir, res, moreDir) {
 		this.rootDir = rootDir;
 		this.res = res;
 		this.init();
 		this.reload = new ReloadHandler(rootDir, res);
 		this.debounce = true;
+		this.moreDirs = moreDir && moreDir.split[","];
 	}
 
 	async init() {
 		this.#watchFile(this.rootDir.slice(1));
 		isLinux && this.#getDirectories(this.rootDir.slice(1));
 		this.res.write(`data:⚡ hmr connected\n\n`);
-		//style dir outside of crt active page, add style dir
-		this.#watchFile("style");
+
+		if (this.moreDirs)
+			for (const dir of this.moreDirs) access(dir, constants.F_OK, (err) => err || this.#watchFile(dir));
 	}
 
 	#watchFile(watchDir) {
@@ -36,8 +39,11 @@ export class ModuleWatcher {
 		if (this.debounce) return (this.debounce = false);
 
 		this.reload.updateChangedFile(filename, watchDir),
-			console.log(`[${this.rootDir.slice(1)}]\x1b[32m page reload\x1b[37m ${filename}`);
-
+			console.log(
+				`\x1b[${pgClr[this.rootDir]}m[${this.rootDir.slice(1)}]\x1b[0m`,
+				`\x1b[32m hmr update\x1b[0m`,
+				`\x1b[2m ${filename}\x1b[0m`
+			);
 		/* const filePath = isLinux ? watchDir + "/" + filename : this.getFullPath(filename);
 		stat(filePath, (err, stats) => {
 			stats.size !== 0 && this.refresh.updateChangedFile(filename, watchDir),

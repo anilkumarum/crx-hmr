@@ -1,8 +1,8 @@
 # crx-hmr
 
-Chrome extension hot Modules Reloader
-💡 Instant Server Start
-⚡️ Lightning Fast HMR
+Chrome extension hot Modules Reloader\
+💡 Instant Server Start\
+⚡️ Lightning Fast HMR\
 🔄 auto-reload chrome extension
 
 [![NPM](https://nodei.co/npm/crx-hmr.png)](https://nodei.co/npm/crx-hmr/)
@@ -23,8 +23,10 @@ With this package, you don't need to do
 
 # Usage
 
-Start HMR server
+Start HMR server\
 `crx-hmr start`
+
+> Note: not test with windows/macos
 
 # Related
 

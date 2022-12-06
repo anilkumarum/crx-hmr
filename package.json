@@ -1,6 +1,6 @@
 {
 	"name": "crx-hmr",
-	"version": "0.0.5",
+	"version": "0.1.7",
 	"description": "Chrome extension hot Modules Reloader",
 	"main": "server.js",
 	"type": "module",
@@ -15,7 +15,8 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "node --watch server.js",
-		"start": "node server.js"
+		"start": "node server.js",
+		"build": "esbuild node/index.js --bundle --outfile=server.js --platform=node --format=esm"
 	},
 	"bin": {
 		"crx-hmr": "bin/cli.js"
